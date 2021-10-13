@@ -1,49 +1,47 @@
+import operator
+
+
 class Calculator:
     def __init__(self, sequence: 'list[str]') -> None:
-        self.sequence = sequence
+        self.__sequence = sequence
 
     def get_result(self) -> int:
         stack = Stack()
         result = 0
 
-        for element in self.sequence:
-            if element == '+':
-                second_number = stack.pop()
-                first_number = stack.pop()
-                result = first_number + second_number
-                stack.push(result)
-                continue
-            if element == '-':
-                second_number = stack.pop()
-                first_number = stack.pop()
-                result = first_number - second_number
-                stack.push(result)
-                continue
-            if element == '*':
-                second_number = stack.pop()
-                first_number = stack.pop()
-                result = first_number * second_number
-                stack.push(result)
-                continue
-            if element == '/':
-                second_number = stack.pop()
-                first_number = stack.pop()
-                result = first_number // second_number
-                stack.push(result)
-                continue
-            stack.push(int(element))
+        operator_sequence = {
+            '+': operator.add,
+            '-': operator.sub,
+            '*': operator.mul,
+            '/': operator.floordiv
+        }
+
+        for element in self.__sequence:
+
+            register = False
+            for key, value in operator_sequence.items():
+                if element == key:
+                    second_number = stack.pop()
+                    first_number = stack.pop()
+                    result = value(first_number, second_number)
+                    stack.push(result)
+                    register = True
+                    break
+
+            if not register:
+                stack.push(int(element))
 
         return stack.pop()
 
 
 class Stack:
     def __init__(self) -> None:
-        self.items = []
+        self.__items = []
 
     def push(self, item: int) -> None:
-        self.items.append(item)
+        self.__items.append(item)
 
     def pop(self) -> int:
-        if not self.items:
+        if not self.__items:
             return None
-        return self.items.pop()
+        return self.__items.pop()
